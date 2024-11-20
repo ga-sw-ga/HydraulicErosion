@@ -387,7 +387,7 @@ GameObject:
   - component: {fileID: 1264556000}
   m_Layer: 0
   m_Name: Terrain
-  m_TagString: Untagged
+  m_TagString: Terrain
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 2147483647
@@ -478,7 +478,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3432920df2ffc5741b2ff8de318bd737, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetHeight: 0
+  _terrain: {fileID: 0}
+  _terrainData: {fileID: 0}
+  _heightmapWidth: 0
+  _heightmapHeight: 0
+  waterDropletGameObject: {fileID: 4288296812240522694, guid: 95520a91b70b5e140bbcb201559f6249, type: 3}
 --- !u!1 &1562805485
 GameObject:
   m_ObjectHideFlags: 0

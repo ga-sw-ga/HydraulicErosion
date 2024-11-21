@@ -1,6 +1,7 @@
 using System;
 using UnityEditor;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class TerrainHeightController : MonoBehaviour
 {
@@ -31,8 +32,16 @@ public class TerrainHeightController : MonoBehaviour
         //Debug.Log("Terrain World Pos Index 0, MAX: " + HeightmapToWorldCoords(new Vector2Int(0, _heightmapHeight)));
         //Debug.Log("Terrain World Pos Index MAX, 0: " + HeightmapToWorldCoords(new Vector2Int(_heightmapWidth, 0)));
         //Debug.Log("Terrain World Pos Index MAX, MAX: " + HeightmapToWorldCoords(new Vector2Int(_heightmapWidth, _heightmapHeight)));
-        Instantiate(waterDropletGameObject, new Vector3(12, 15, 33), Quaternion.identity);
+        //Instantiate(waterDropletGameObject, new Vector3(12, 15, 33), Quaternion.identity);
         //AdjustTerrainHeight(targetHeight);
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            Instantiate(waterDropletGameObject, new Vector3(Random.Range(0f, 50f), 0f, Random.Range(0f, 50f)), Quaternion.identity);
+        }
     }
 
     private void OnPlayModeStateChanged(PlayModeStateChange state)
@@ -136,6 +145,26 @@ public class TerrainHeightController : MonoBehaviour
                 }
             }
         }
+    }
+    
+    public void AddSediment(Vector3 worldPosition, float amount)
+    {
+        Vector3 terrainPosition = GetTerrainPosition();
+        Vector3 terrainSize = GetTerrainSize();
+        
+        float relativeX = (worldPosition.x - terrainPosition.x) / terrainSize.x * (_heightmapWidth - 1);
+        float relativeZ = (worldPosition.z - terrainPosition.z) / terrainSize.z * (_heightmapHeight - 1);
+        
+        int baseX = Mathf.Clamp(Mathf.FloorToInt(relativeX), 0, _heightmapWidth - 2);
+        int baseZ = Mathf.Clamp(Mathf.FloorToInt(relativeZ), 0, _heightmapHeight - 2);
+        
+        float fracX = relativeX - baseX;
+        float fracZ = relativeZ - baseZ;
+        
+        AddTerrainHeight(new Vector2Int(baseX, baseZ), amount * (1f - fracX) * (1f - fracZ));
+        AddTerrainHeight(new Vector2Int(baseX, baseZ + 1), amount * (1f - fracX) * fracZ);
+        AddTerrainHeight(new Vector2Int(baseX + 1, baseZ), amount * fracX * (1f - fracZ));
+        AddTerrainHeight(new Vector2Int(baseX + 1, baseZ + 1), amount * fracX * fracZ);
     }
     
     public Vector2 CalculateCellOffset(Vector3 worldPosition)

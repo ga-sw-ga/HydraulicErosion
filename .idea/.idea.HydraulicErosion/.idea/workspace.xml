@@ -6,9 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="32db0753-aa63-42fb-8986-5f041fad5a0c" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.HydraulicErosion/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.HydraulicErosion/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/SampleScene.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/SampleScene.unity" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Prefab/WaterDroplet.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefab/WaterDroplet.prefab" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/TerrainHeightController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/TerrainHeightController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProjectSettings/TagManager.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/TagManager.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/WaterDroplet.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/WaterDroplet.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Terrain/Terrain01.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Terrain/Terrain01.asset" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -20,6 +21,9 @@
   </component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/a2a0951b230f4415b73d65af3d1ae69a16c00/f6/f8b50352/TerrainData.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/../Hydraulic-Erosion-Coding-Adventure-E01/Hydraulic-Erosion-Coding-Adventure-E01/Assets/Scripts/Erosion.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/../Hydraulic-Erosion-Coding-Adventure-E01/Hydraulic-Erosion-Coding-Adventure-E01/Assets/Scripts/HeightMapGenerator.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/../Hydraulic-Erosion-Coding-Adventure-E01/Hydraulic-Erosion-Coding-Adventure-E01/Assets/Scripts/MeshGenerator.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/WaterDroplet.cs" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="ProjectColorInfo">{
@@ -98,7 +102,8 @@
       <updated>1731647313678</updated>
       <workItem from="1731647320425" duration="6392000" />
       <workItem from="1732047657549" duration="5000" />
-      <workItem from="1732048556770" duration="20904000" />
+      <workItem from="1732048556770" duration="21100000" />
+      <workItem from="1732143432699" duration="12610000" />
     </task>
     <servers />
   </component>

@@ -7,8 +7,8 @@ public class WaterDroplet : MonoBehaviour
     private const float DIR_STEP = 0.05f;
     
     // Droplet properties
-    public float erosionRadius = 3f;
-    public float inertia = 0.0f;
+    public float erosionRadius = 0.15f;
+    public float inertia = 0.05f;
     public float sedimentCapacityFactor = 4f;
     public float minSedimentCapacity = 0.01f;
     public float erodeSpeed = 0.3f;
@@ -50,13 +50,13 @@ public class WaterDroplet : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKey(KeyCode.Space))
+        //if (Input.GetKey(KeyCode.Space))
         {
-            /*if (lifetime > maxLifetime || waterVolume <= 0f)
+            if (lifetime > maxLifetime || waterVolume <= 0f)
             {
                 Destroy(gameObject); // Stop simulation
                 return;
-            }*/
+            }
 
             lifetime++;
 
@@ -77,7 +77,6 @@ public class WaterDroplet : MonoBehaviour
             // Update direction using inertia
             Vector2 newDirection = (direction * inertia - gradient * (1 - inertia)).normalized * DIR_STEP;
             direction = newDirection;
-            Debug.Log(direction);
 
             //Debug.DrawLine(position, position + new Vector3(direction.x, terrainController.GetHeight(position), direction.y));
 
@@ -102,6 +101,7 @@ public class WaterDroplet : MonoBehaviour
                     ? Mathf.Min(sediment, deltaHeight)
                     : (sediment - sedimentCapacity) * depositSpeed;
                 //terrainController.DepositSediment(position, depositAmount, erosionRadius);
+                terrainController.AddSediment(position, depositAmount);
                 sediment -= depositAmount;
             }
             else
@@ -109,6 +109,7 @@ public class WaterDroplet : MonoBehaviour
                 // Erode sediment
                 float erodeAmount = Mathf.Min((sedimentCapacity - sediment) * erodeSpeed, -deltaHeight);
                 //terrainController.ErodeTerrain(position, erodeAmount, erosionRadius);
+                terrainController.AddSediment(position, -erodeAmount);
                 sediment += erodeAmount;
             }
 

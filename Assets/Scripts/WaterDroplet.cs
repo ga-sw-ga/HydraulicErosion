@@ -4,15 +4,15 @@ using Random = UnityEngine.Random;
 
 public class WaterDroplet : MonoBehaviour
 {
-    private const float DIR_STEP = 0.05f;
+    private const float DIR_STEP = 0.025f;
     
     // Droplet properties
-    public float erosionRadius = 0.15f;
+    public float erosionRadius = 3f;
     public float inertia = 0.05f;
     public float sedimentCapacityFactor = 4f;
     public float minSedimentCapacity = 0.01f;
-    public float erodeSpeed = 0.3f;
-    public float depositSpeed = 0.3f;
+    public float erodeSpeed = 0.03f;
+    public float depositSpeed = 0.03f;
     public float evaporateSpeed = 0.01f;
     public float gravity = 4f;
     public int maxLifetime = 30;
@@ -50,7 +50,7 @@ public class WaterDroplet : MonoBehaviour
 
     private void Update()
     {
-        //if (Input.GetKey(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space))
         {
             if (lifetime > maxLifetime || waterVolume <= 0f)
             {
@@ -60,19 +60,9 @@ public class WaterDroplet : MonoBehaviour
 
             lifetime++;
 
-            // Convert droplet position to heightmap coordinates
-            Vector2Int heightmapCoords = terrainController.WorldToHeightmapCoords(position);
-            if (heightmapCoords.x < 0 || heightmapCoords.y < 0 ||
-                heightmapCoords.x >= terrainController._heightmapWidth ||
-                heightmapCoords.y >= terrainController._heightmapHeight)
-            {
-                Destroy(gameObject); // Droplet left the terrain
-                return;
-            }
-
             // Interpolate height and gradient at current position
-            float currentHeight = terrainController.GetHeight(position);
-            Vector2 gradient = terrainController.CalculateGradient(position);
+            float currentHeight = terrainController.GetHeightOnHeightmap(position);
+            Vector2 gradient = terrainController.GetGradient(position);
 
             // Update direction using inertia
             Vector2 newDirection = (direction * inertia - gradient * (1 - inertia)).normalized * DIR_STEP;
@@ -83,10 +73,21 @@ public class WaterDroplet : MonoBehaviour
             // Move the droplet
             position.x += direction.x;
             position.z += direction.y;
-            position.y = terrainController.GetHeight(position);
+            position.y = currentHeight;
+            //position.y = currentHeight;
+            
+            // Convert droplet position to heightmap coordinates
+            Vector2Int heightmapCoords = terrainController.WorldToHeightmapCoords(position);
+            if (heightmapCoords.x < 0 || heightmapCoords.y < 0 ||
+                heightmapCoords.x + 1 >= terrainController._heightmapWidth ||
+                heightmapCoords.y + 1 >= terrainController._heightmapHeight)
+            {
+                Destroy(gameObject); // Droplet left the terrain
+                return;
+            }
 
             // Calculate new height and height difference
-            float newHeight = terrainController.GetHeight(position);
+            float newHeight = terrainController.GetHeightOnHeightmap(position);
             float deltaHeight = newHeight - currentHeight;
 
             // Update sediment capacity
@@ -99,18 +100,20 @@ public class WaterDroplet : MonoBehaviour
                 // Deposit sediment
                 float depositAmount = deltaHeight > 0
                     ? Mathf.Min(sediment, deltaHeight)
-                    : (sediment - sedimentCapacity) * depositSpeed;
+                    : (sediment - sedimentCapacity) * depositSpeed / terrainController.GetTerrainSize().y;
                 //terrainController.DepositSediment(position, depositAmount, erosionRadius);
-                terrainController.AddSediment(position, depositAmount);
+                terrainController.AddSedimentToHeightmap(position, depositAmount);
                 sediment -= depositAmount;
+                Debug.Log("Deposit Amount: " + depositAmount);
             }
             else
             {
                 // Erode sediment
-                float erodeAmount = Mathf.Min((sedimentCapacity - sediment) * erodeSpeed, -deltaHeight);
+                float erodeAmount = Mathf.Min((sedimentCapacity - sediment) * erodeSpeed, -deltaHeight) / terrainController.GetTerrainSize().y;
                 //terrainController.ErodeTerrain(position, erodeAmount, erosionRadius);
-                terrainController.AddSediment(position, -erodeAmount);
+                terrainController.AddSedimentToHeightmap(position, -erodeAmount);
                 sediment += erodeAmount;
+                Debug.Log("Erode Amount: " + erodeAmount);
             }
 
             // Update droplet speed and water volume

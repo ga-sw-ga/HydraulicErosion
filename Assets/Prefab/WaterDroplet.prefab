@@ -96,12 +96,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e4a2857258a19c249a6563ecda50ec91, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  erosionRadius: 0.03
+  erosionRadius: 3
   inertia: 0.05
   sedimentCapacityFactor: 4
-  minSedimentCapacity: 0.1
-  erodeSpeed: 0.005
-  depositSpeed: 0.02
+  minSedimentCapacity: 0.01
+  erodeSpeed: 3
+  depositSpeed: 3
   evaporateSpeed: 0.01
   gravity: 4
   maxLifetime: 100

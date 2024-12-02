@@ -30,8 +30,9 @@ public class TerrainHeightController : MonoBehaviour
     void Start()
     {
         SaveInitialHeightmap();
-        _heightMap = CopyHeightmap(_initialHeights);
-        Instantiate(waterDropletGameObject, new Vector3(12, 15, 33), Quaternion.identity);
+        //_heightMap = CopyHeightmap(_initialHeights);
+        _heightMap = HeightMapGenerator.Generate(_initialHeights.GetLength(0));
+        Instantiate(waterDropletGameObject, new Vector3(12f, 15f, 33f), Quaternion.identity);
         //AdjustTerrainHeight(targetHeight);
     }
 
@@ -39,7 +40,9 @@ public class TerrainHeightController : MonoBehaviour
     {
         if (Input.GetKey(KeyCode.Space))
         {
-            //Instantiate(waterDropletGameObject, new Vector3(Random.Range(0f, 50f), 0f, Random.Range(0f, 50f)), Quaternion.identity);
+            Instantiate(waterDropletGameObject, new Vector3(Random.Range(0f, 50f), 0f, Random.Range(0f, 50f)), Quaternion.identity);
+            //Instantiate(waterDropletGameObject, new Vector3(12f, 15f, 33f), Quaternion.identity);
+            //Instantiate(waterDropletGameObject, new Vector3(21.5f, 5f, 36f), Quaternion.identity);
         }
 
         if (Input.GetKeyDown(KeyCode.K))
@@ -48,7 +51,7 @@ public class TerrainHeightController : MonoBehaviour
         }
         
         // Check for mouse click
-        if (Input.GetMouseButtonDown(0)) // Left mouse button
+        /*if (Input.GetMouseButtonDown(0)) // Left mouse button
         {
             // Create a ray from the camera through the mouse position
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -80,7 +83,7 @@ public class TerrainHeightController : MonoBehaviour
                     LoadHeightmap(_heightMap);
                 }
             }
-        }
+        }*/
     }
 
     private void OnPlayModeStateChanged(PlayModeStateChange state)
@@ -208,10 +211,10 @@ public class TerrainHeightController : MonoBehaviour
         float fracX = relativeX - baseX;
         float fracZ = relativeZ - baseZ;
         
-        _heightMap[heightmapCoords.x, heightmapCoords.y] += amount * (1f - fracX) * (1f - fracZ);
-        _heightMap[heightmapCoords.x, heightmapCoords.y + 1] += amount * (1f - fracX) * fracZ;
-        _heightMap[heightmapCoords.x + 1, heightmapCoords.y] += amount * fracX * (1f - fracZ);
-        _heightMap[heightmapCoords.x + 1, heightmapCoords.y + 1] += amount * fracX * fracZ;
+        _heightMap[heightmapCoords.y, heightmapCoords.x] += amount * (1f - fracX) * (1f - fracZ);
+        _heightMap[heightmapCoords.y + 1, heightmapCoords.x] += amount * (1f - fracX) * fracZ;
+        _heightMap[heightmapCoords.y, heightmapCoords.x + 1] += amount * fracX * (1f - fracZ);
+        _heightMap[heightmapCoords.y + 1, heightmapCoords.x + 1] += amount * fracX * fracZ;
     }
     
     public Vector2 CalculateCellOffset(Vector3 worldPosition)
@@ -267,10 +270,10 @@ public class TerrainHeightController : MonoBehaviour
         int baseZ = Mathf.Clamp(Mathf.FloorToInt(relativeZ), 0, _heightmapHeight - 2);
 
         // Fetch surrounding heights
-        float h00 = _heightMap[baseZ, baseX] * _terrainData.size.y;
-        float h10 = _heightMap[baseZ, baseX + 1] * _terrainData.size.y;
-        float h01 = _heightMap[baseZ + 1, baseX] * _terrainData.size.y;
-        float h11 = _heightMap[baseZ + 1, baseX + 1] * _terrainData.size.y;
+        float h00 = _heightMap[baseZ, baseX];
+        float h10 = _heightMap[baseZ, baseX + 1];
+        float h01 = _heightMap[baseZ + 1, baseX];
+        float h11 = _heightMap[baseZ + 1, baseX + 1];
         
         // Compute the fractional offsets
         float fracX = relativeX - baseX;
@@ -284,7 +287,7 @@ public class TerrainHeightController : MonoBehaviour
                           (h11 - h10) * fracX;
 
         // Return the gradient vector in world coordinates
-        return new Vector2(gradientX, gradientZ).normalized;
+        return new Vector2(gradientX, gradientZ);
     }
     
     public Vector3 GetTerrainSize()
@@ -330,29 +333,6 @@ public class TerrainHeightController : MonoBehaviour
     
     public float GetHeightOnHeightmap(Vector3 worldPosition)
     {
-        /*Vector2Int heightmapCoords = WorldToHeightmapCoords(worldPosition);
-
-        // Get normalized position within the cell
-        float relativeX = (worldPosition.x - _terrainPosition.x) / _terrainSize.x * (_heightmapWidth - 1);
-        float relativeZ = (worldPosition.z - _terrainPosition.z) / _terrainSize.z * (_heightmapHeight - 1);
-
-        float fracX = relativeX - Mathf.Floor(relativeX);
-        float fracZ = relativeZ - Mathf.Floor(relativeZ);
-
-        // Fetch the four surrounding heights
-        float h00 = _heightMap[heightmapCoords.y, heightmapCoords.x] * _terrainData.size.y;
-        float h10 = _heightMap[heightmapCoords.y + 1, heightmapCoords.x] * _terrainData.size.y;
-        float h01 = _heightMap[heightmapCoords.y, heightmapCoords.x + 1] * _terrainData.size.y;
-        float h11 = _heightMap[heightmapCoords.y + 1, heightmapCoords.x + 1] * _terrainData.size.y;
-
-        // Bilinear interpolation
-        float interpolatedHeight = h00 * (1f - fracX) * (1f - fracZ)
-                                   + h10 * fracX * (1f - fracZ)
-                                   + h01 * (1f - fracX) * fracZ
-                                   + h11 * fracX * fracZ;
-
-        return interpolatedHeight;
-        */
         // Get normalized position within the heightmap
         float relativeX = (worldPosition.x - _terrainPosition.x) / _terrainSize.x * (_heightmapWidth - 1);
         float relativeZ = (worldPosition.z - _terrainPosition.z) / _terrainSize.z * (_heightmapHeight - 1);
@@ -361,10 +341,10 @@ public class TerrainHeightController : MonoBehaviour
         int baseZ = Mathf.Clamp(Mathf.FloorToInt(relativeZ), 0, _heightmapHeight - 2);
 
         // Fetch surrounding heights
-        float h00 = _heightMap[baseZ, baseX] * _terrainData.size.y;
-        float h10 = _heightMap[baseZ, baseX + 1] * _terrainData.size.y;
-        float h01 = _heightMap[baseZ + 1, baseX] * _terrainData.size.y;
-        float h11 = _heightMap[baseZ + 1, baseX + 1] * _terrainData.size.y;
+        float h00 = _heightMap[baseZ, baseX];
+        float h10 = _heightMap[baseZ, baseX + 1];
+        float h01 = _heightMap[baseZ + 1, baseX];
+        float h11 = _heightMap[baseZ + 1, baseX + 1];
         
         // Compute the fractional offsets
         float fracX = relativeX - baseX;
@@ -526,5 +506,7 @@ public class TerrainHeightController : MonoBehaviour
         Debug.Log("_terrainData.detailHeight: " + _terrainData.detailHeight);
         Debug.Log("_terrainData.heightmapScale.y: " + _terrainData.heightmapScale.y);
     }
+    
+    
 
 }

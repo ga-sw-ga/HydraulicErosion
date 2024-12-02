@@ -4,7 +4,7 @@ using Random = UnityEngine.Random;
 
 public class WaterDroplet : MonoBehaviour
 {
-    private const float DIR_STEP = 0.025f;
+    private const float DIR_STEP = 0.1f;
     
     // Droplet properties
     public float erosionRadius = 3f;
@@ -20,7 +20,7 @@ public class WaterDroplet : MonoBehaviour
     public float initialSpeed = 1f;
 
     // Droplet simulation state
-    private Vector3 position;
+    private Vector3 position, prev_position;
     private Vector2 direction;
     private float speed;
     private float waterVolume;
@@ -50,7 +50,7 @@ public class WaterDroplet : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        //if (Input.GetKeyDown(KeyCode.Space))
         {
             if (lifetime > maxLifetime || waterVolume <= 0f)
             {
@@ -63,6 +63,7 @@ public class WaterDroplet : MonoBehaviour
             // Interpolate height and gradient at current position
             float currentHeight = terrainController.GetHeightOnHeightmap(position);
             Vector2 gradient = terrainController.GetGradient(position);
+            //Debug.Log(gradient.magnitude);
 
             // Update direction using inertia
             Vector2 newDirection = (direction * inertia - gradient * (1 - inertia)).normalized * DIR_STEP;
@@ -73,7 +74,7 @@ public class WaterDroplet : MonoBehaviour
             // Move the droplet
             position.x += direction.x;
             position.z += direction.y;
-            position.y = currentHeight;
+            position.y = currentHeight * terrainController.GetTerrainSize().y;
             //position.y = currentHeight;
             
             // Convert droplet position to heightmap coordinates
@@ -100,20 +101,20 @@ public class WaterDroplet : MonoBehaviour
                 // Deposit sediment
                 float depositAmount = deltaHeight > 0
                     ? Mathf.Min(sediment, deltaHeight)
-                    : (sediment - sedimentCapacity) * depositSpeed / terrainController.GetTerrainSize().y;
+                    : (sediment - sedimentCapacity) * depositSpeed;
                 //terrainController.DepositSediment(position, depositAmount, erosionRadius);
-                terrainController.AddSedimentToHeightmap(position, depositAmount);
+                terrainController.AddSedimentToHeightmap(prev_position, depositAmount);
                 sediment -= depositAmount;
-                Debug.Log("Deposit Amount: " + depositAmount);
+                //Debug.Log("Deposit Amount: " + depositAmount);
             }
             else
             {
                 // Erode sediment
-                float erodeAmount = Mathf.Min((sedimentCapacity - sediment) * erodeSpeed, -deltaHeight) / terrainController.GetTerrainSize().y;
+                float erodeAmount = Mathf.Min((sedimentCapacity - sediment) * erodeSpeed, -deltaHeight);
                 //terrainController.ErodeTerrain(position, erodeAmount, erosionRadius);
-                terrainController.AddSedimentToHeightmap(position, -erodeAmount);
+                terrainController.AddSedimentToHeightmap(prev_position, -erodeAmount);
                 sediment += erodeAmount;
-                Debug.Log("Erode Amount: " + erodeAmount);
+                //Debug.Log("Erode Amount: " + erodeAmount);
             }
 
             // Update droplet speed and water volume
@@ -127,6 +128,7 @@ public class WaterDroplet : MonoBehaviour
             }
 
             transform.position = position;
+            prev_position = position;
         }
     }
 }

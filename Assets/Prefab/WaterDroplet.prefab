@@ -100,11 +100,11 @@ MonoBehaviour:
   inertia: 0.05
   sedimentCapacityFactor: 4
   minSedimentCapacity: 0.01
-  erodeSpeed: 3
-  depositSpeed: 3
+  erodeSpeed: 0.6
+  depositSpeed: 0.6
   evaporateSpeed: 0.01
   gravity: 4
-  maxLifetime: 100
+  maxLifetime: 200
   initialWaterVolume: 1
   initialSpeed: 1
   terrainController: {fileID: 0}

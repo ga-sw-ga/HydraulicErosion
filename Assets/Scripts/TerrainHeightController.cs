@@ -1,10 +1,12 @@
 using System;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
 public class TerrainHeightController : MonoBehaviour
 {
+    public int iterationNum, currentIteration = 0, iterationChunkSize = 50;
     [HideInInspector] public Terrain _terrain;
     [HideInInspector] public TerrainData _terrainData;
     [HideInInspector] public int _heightmapWidth, _heightmapHeight;
@@ -14,7 +16,10 @@ public class TerrainHeightController : MonoBehaviour
     public GameObject waterDropletGameObject;
     
     private float[,] _initialHeights, _heightMap;
-    
+
+    private Dictionary<int, (int, int, float)[]> brushRadiiOffsets = new Dictionary<int, (int, int, float)[]>;
+
+
     private void Awake()
     {
         EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
@@ -30,17 +35,26 @@ public class TerrainHeightController : MonoBehaviour
     void Start()
     {
         SaveInitialHeightmap();
-        //_heightMap = CopyHeightmap(_initialHeights);
-        _heightMap = HeightMapGenerator.Generate(_initialHeights.GetLength(0));
-        Instantiate(waterDropletGameObject, new Vector3(12f, 15f, 33f), Quaternion.identity);
+        _heightMap = CopyHeightmap(_initialHeights);
+        //_heightMap = HeightMapGenerator.Generate(_initialHeights.GetLength(0));
+        Instantiate(waterDropletGameObject, new Vector3(21f, 17f, 34f), Quaternion.identity);
         //AdjustTerrainHeight(targetHeight);
     }
 
     private void Update()
     {
+        if (currentIteration <= iterationNum)
+        {
+            for (int i = 0; i < iterationChunkSize; i++)
+            {
+                Instantiate(waterDropletGameObject, new Vector3(Random.Range(0f, 50f), 0f, Random.Range(0f, 50f)), Quaternion.identity);
+                currentIteration++;
+            }
+        }
+
         if (Input.GetKey(KeyCode.Space))
         {
-            Instantiate(waterDropletGameObject, new Vector3(Random.Range(0f, 50f), 0f, Random.Range(0f, 50f)), Quaternion.identity);
+            //Instantiate(waterDropletGameObject, new Vector3(Random.Range(0f, 50f), 0f, Random.Range(0f, 50f)), Quaternion.identity);
             //Instantiate(waterDropletGameObject, new Vector3(12f, 15f, 33f), Quaternion.identity);
             //Instantiate(waterDropletGameObject, new Vector3(21.5f, 5f, 36f), Quaternion.identity);
         }

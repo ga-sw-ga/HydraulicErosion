@@ -11,8 +11,8 @@ public class WaterDroplet : MonoBehaviour
     public float inertia = 0.05f;
     public float sedimentCapacityFactor = 4f;
     public float minSedimentCapacity = 0.01f;
-    public float erodeSpeed = 0.03f;
-    public float depositSpeed = 0.03f;
+    public float erodeSpeed = 0.3f;
+    public float depositSpeed = 0.3f;
     public float evaporateSpeed = 0.01f;
     public float gravity = 4f;
     public int maxLifetime = 30;
@@ -92,7 +92,7 @@ public class WaterDroplet : MonoBehaviour
             float deltaHeight = newHeight - currentHeight;
 
             // Update sediment capacity
-            float sedimentCapacity = Mathf.Max(-deltaHeight * speed * waterVolume * sedimentCapacityFactor,
+            float sedimentCapacity = Mathf.Max(-deltaHeight * waterVolume * sedimentCapacityFactor,
                 minSedimentCapacity);
 
             // Deposit or erode sediment
@@ -118,17 +118,19 @@ public class WaterDroplet : MonoBehaviour
             }
 
             // Update droplet speed and water volume
-            speed = Mathf.Sqrt(speed * speed + deltaHeight * gravity);
+            //speed = Mathf.Sqrt(speed * speed + deltaHeight * gravity);
             waterVolume *= (1 - evaporateSpeed);
 
             // Check if the droplet should stop
-            if (speed <= 0.01f || waterVolume <= 0f)
+            if ((lifetime > 5 && sediment <= 0.0001f) || waterVolume <= 0f)
             {
                 Destroy(gameObject);
             }
 
             transform.position = position;
             prev_position = position;
+
+            //Debug.Log("Sediment: " + sediment + ", Delta Height: " + deltaHeight * terrainController.GetTerrainSize().y);
         }
     }
 }
